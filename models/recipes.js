@@ -8,6 +8,7 @@ var recipeSchema = mongoose.Schema({
 	photo: {type: String},
 	ingredients: String,
 	directions: String,
+	slug: String
 })
 
 var Recipe = module.exports = mongoose.model('Recipe', recipeSchema)
