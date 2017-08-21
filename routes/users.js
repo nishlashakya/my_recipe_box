@@ -15,7 +15,6 @@ router.get('/', function(req, res) {
 
 
 router.post('/register', function(req, res) {
-
 	const saltRounds = 10;
 	const myPlaintextPassword = req.body.password;
 
@@ -32,7 +31,6 @@ router.post('/register', function(req, res) {
 			if(err) throw err
 			res.json({register: true, doc});
 		});
-		console.log('entered..........', user);
 	});
 
 });
@@ -42,29 +40,20 @@ router.post('/login', function(req, res) {
 	if(req.body.email && req.body.password) {
 		Users.find({email: req.body.email}, function(err, docs) {
 			if(err) {
-				res.json({successs: false, message: 'Error'});
+				res.json({successs: false, result: {message: 'User not found'}})
 			}
 			bcrypt.compare(req.body.password, docs[0].password, function(err, loginSuccess) {
-				console.log(',,,,,,,,,,,,,,,,,,,,', docs[0]);
 				if(loginSuccess) {
 					var token = jwt.sign(docs[0], 'secret', { expiresIn: 60 * 60 });
 					res.json({successs: true, result: {message: 'Login Successful!', token, user: docs[0]}});
 				} else {
-					res.json({successs: false, result: {message: 'User not found'}})
+					res.json({successs: false, result: {message: 'Password Incorrect'}})
 				}
 			});
 		});
-    }
+	} else {
+			res.json({result: {message: 'Please enter your email and password'}})
+	}
 });
-
-// router.post('/verify', function(req, res) {
-// 	jwt.verify(req.headers['authorization'], 'secret', function(err, decoded) {
-// 		if (err) {
-// 			res.json({verify: false})
-// 		} else {
-// 			res.json({verify: true, decoded})
-// 		}
-// 	})
-// })
 
 module.exports = router;
