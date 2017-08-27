@@ -18,8 +18,15 @@ router.post('/check-email', function (req, res) {
 	Users.find({email: req.body.email}, function(err, doc) {
 		if(doc[0]) {
 			var passwordChangetoken = Math.random().toString(36).substring(7);
-			doc[0].update({$set: passwordChangetoken}, {new: true}, function (err, user) {
-				res.json({successs: true, message: 'Password recovery procedure has been emailed to you', passwordChangetoken})
+			var passwordChangetokenExpiration = Date.now() + 86400000;
+			doc[0].update({
+				$set: {
+					passwordChangetoken,
+					passwordChangetokenExpiration
+				}},
+				{new: true},
+				function (err, user) {
+				res.json({successs: true, message: 'Password recovery procedure has been emailed to you'})
 				//send email with link to reset password
 			});
 		} else {
@@ -33,10 +40,14 @@ router.get('/reset-password/:token', function (req, res, next) {
 	Users.findOne({ passwordChangetoken: req.params.token }, (err, doc) => {
 		if(err) return next(err);
 		if (doc) {
-			res.json({ action: 'checkToken', success: true });
+			if (doc.passwordChangetokenExpiration > Date.now()) {
+				res.json({ action: 'checkToken', success: true , message: 'token verified'});
+			} else {
+				res.json({action: 'checkToken', successs: false, message: 'expired token'})
+			}
 		} else {
 			res.json({action: 'checkToken', successs: false, message: 'invalid token'});
-		}	
+		}
 	});
 });
 
