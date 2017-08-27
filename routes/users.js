@@ -17,8 +17,8 @@ router.get('/', function(req, res) {
 router.post('/check-email', function (req, res) {
 	Users.find({email: req.body.email}, function(err, doc) {
 		if(doc[0]) {
-			var passwordChangetoken = Math.random().toString(36).substring(7);
-			var passwordChangetokenExpiration = Date.now() + 86400000;
+			const passwordChangetoken = Math.random().toString(36).substring(7);
+			const passwordChangetokenExpiration = Date.now() + 86400000;
 			doc[0].update({
 				$set: {
 					passwordChangetoken,
