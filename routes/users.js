@@ -52,13 +52,19 @@ router.get('/reset-password/:token', function (req, res, next) {
 });
 
 router.post('/reset-password', function (req, res) {
-	Users.findOneAndUpdate({passwordChangetoken: req.body.passwordChangetoken}, {$set: {password: req.body.password}}, {new: true}, function (err, data) {
-		if (data) {
-			res.json({action: 'reset password', successs: true, message: 'Password successfully changed'})
+	Users.findOne({ passwordChangetoken: req.body.passwordChangetoken }, (err, user) => {
+		if (user) {
+			if (user.passwordChangetokenExpiration > Date.now()) {
+				user.update({$set: {password: req.body.password}}, {new: true}, function (err, data) {
+					res.json({action: 'reset password', successs: true, message: 'Password successfully changed'})
+				});
+			} else {
+				res.json({action: 'reset password', successs: false, message: 'expired token'})
+			}
 		} else {
 			res.json({action: 'reset password', successs: false, message: 'invalid token'})
 		}
-	})
+	});
 })
 
 router.post('/register', function(req, res) {
