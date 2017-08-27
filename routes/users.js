@@ -29,14 +29,14 @@ router.put('/forgetPassword-emailCheck', function (req, res) {
 	})
 });
 
-router.get('/resetPassword/:token', function (req, res) {
-	jwt.verify(req.params.token, 'secret', function(err, decoded) {
-		if (decoded) {
-			res.json({action: 'checkToken', successs: true});
-			// render to password reset page
+router.get('/resetPassword/:token', function (req, res, next) {
+	Users.findOne({ passwordChangetoken: req.params.token }, (err, doc) => {
+		if(err) return next(err);
+		if (doc) {
+			res.json({ action: 'checkToken', success: true });
 		} else {
 			res.json({action: 'checkToken', successs: false, message: 'invalid token'});
-		}
+		}	
 	});
 });
 
