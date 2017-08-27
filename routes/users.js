@@ -5,6 +5,10 @@ var Users = require('../models/users');
 var jwt = require('jsonwebtoken');
 var bcrypt = require('bcrypt');
 
+const checkToken = require('../utils/checkToken');
+
+const saltRounds = 10;
+
 /* GET users listing. */
 router.get('/login', function(req, res) {
   res.render('login');
@@ -55,8 +59,10 @@ router.post('/reset-password', function (req, res) {
 	Users.findOne({ passwordChangetoken: req.body.passwordChangetoken }, (err, user) => {
 		if (user) {
 			if (user.passwordChangetokenExpiration > Date.now()) {
-				user.update({$set: {password: req.body.password}}, {new: true}, function (err, data) {
-					res.json({action: 'reset password', successs: true, message: 'Password successfully changed'})
+				bcrypt.hash(req.body.password, saltRounds, function(err, hash) {
+					user.update({$set: {password: hash}}, {new: true}, function (err, data) {
+						res.json({action: 'reset password', successs: true, message: 'Password successfully changed'})
+					});
 				});
 			} else {
 				res.json({action: 'reset password', successs: false, message: 'expired token'})
@@ -65,10 +71,18 @@ router.post('/reset-password', function (req, res) {
 			res.json({action: 'reset password', successs: false, message: 'invalid token'})
 		}
 	});
+});
+
+router.post('/change-password', checkToken, function (req, res, next) {
+	bcrypt.hash(req.body.password, saltRounds, function(err, hash) {
+		Users.findOneAndUpdate({_id: req.decoded._doc._id}, {$set: {password: hash}}, {new: true}, function (err, data) {
+			if (err) return next(err);
+			res.json({action: 'change-password', successs: true, message: 'password changed successfully'})
+		});
+	});
 })
 
 router.post('/register', function(req, res) {
-	const saltRounds = 10;
 	const myPlaintextPassword = req.body.password;
 
 	bcrypt.hash(myPlaintextPassword, saltRounds, function(err, hash) {
