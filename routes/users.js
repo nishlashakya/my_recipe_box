@@ -14,6 +14,42 @@ router.get('/', function(req, res) {
 });
 
 
+router.put('/forgetPassword-emailCheck', function (req, res) {
+	Users.find({email: req.body.email}, function(err, doc) {
+		if(doc[0]) {
+			var passwordChangetoken = jwt.sign({email: doc[0].email}, 'secret', { expiresIn: 60 * 60 });
+			doc[0].update({$set: passwordChangetoken}, {new: true}, function (err, user) {
+				res.json({successs: true, message: 'Password recovery procedure has been emailed to you', passwordChangetoken})
+				//send email with link to reset password
+			});
+		} else {
+			res.json({message: 'email id not found'})
+
+		}
+	})
+});
+
+router.get('/resetPassword/:token', function (req, res) {
+	jwt.verify(req.params.token, 'secret', function(err, decoded) {
+		if (decoded) {
+			res.json({action: 'checkToken', successs: true});
+			// render to password reset page
+		} else {
+			res.json({action: 'checkToken', successs: false, message: 'invalid token'});
+		}
+	});
+});
+
+router.post('/resetPassword', function (req, res) {
+	Users.findOneAndUpdate({passwordChangetoken: req.body.passwordChangetoken}, {$set: {password: req.body.password}}, {new: true}, function (err, data) {
+		if (data) {
+			res.json({action: 'reset password', successs: true, message: 'Password successfully changed'})
+		} else {
+			res.json({action: 'reset password', successs: false, message: 'invalid token'})
+		}
+	})
+})
+
 router.post('/register', function(req, res) {
 	const saltRounds = 10;
 	const myPlaintextPassword = req.body.password;

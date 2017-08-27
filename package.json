@@ -3,16 +3,23 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "nodejs ./bin/www"
+    "start": "./node_modules/.bin/nodemon ./bin/www"
   },
   "dependencies": {
+    "bcrypt": "^1.0.2",
+    "bluebird": "^3.5.0",
     "body-parser": "~1.0.0",
     "cookie-parser": "~1.0.1",
     "debug": "~0.7.4",
     "ejs": "~0.8.5",
     "express": "~4.0.0",
+    "jsonwebtoken": "^7.4.3",
     "mongoose": "^4.11.4",
     "morgan": "~1.0.0",
+    "slugify": "^1.2.1",
     "static-favicon": "~1.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.11.0"
   }
 }

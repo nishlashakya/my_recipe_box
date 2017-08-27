@@ -8,6 +8,7 @@ var userSchema = mongoose.Schema({
 	address: String,
 	email: String,
 	password: String,
+	passwordChangetoken: String
 })
 
 var User = module.exports = mongoose.model('User', userSchema)

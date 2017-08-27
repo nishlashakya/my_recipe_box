@@ -7,8 +7,6 @@ function checkToken(req, res, next) {
 		if (err) {
 			res.json({verify: false})
 		} else {
-			// res.json({verify: true, decoded});
-			console.log('m verified........');
 			next();
 		}
 	});
