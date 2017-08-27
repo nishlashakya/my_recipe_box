@@ -14,10 +14,10 @@ router.get('/', function(req, res) {
 });
 
 
-router.put('/forgetPassword-emailCheck', function (req, res) {
+router.post('/check-email', function (req, res) {
 	Users.find({email: req.body.email}, function(err, doc) {
 		if(doc[0]) {
-			var passwordChangetoken = jwt.sign({email: doc[0].email}, 'secret', { expiresIn: 60 * 60 });
+			var passwordChangetoken = Math.random().toString(36).substring(7);
 			doc[0].update({$set: passwordChangetoken}, {new: true}, function (err, user) {
 				res.json({successs: true, message: 'Password recovery procedure has been emailed to you', passwordChangetoken})
 				//send email with link to reset password
@@ -29,7 +29,7 @@ router.put('/forgetPassword-emailCheck', function (req, res) {
 	})
 });
 
-router.get('/resetPassword/:token', function (req, res, next) {
+router.get('/reset-password/:token', function (req, res, next) {
 	Users.findOne({ passwordChangetoken: req.params.token }, (err, doc) => {
 		if(err) return next(err);
 		if (doc) {
@@ -40,7 +40,7 @@ router.get('/resetPassword/:token', function (req, res, next) {
 	});
 });
 
-router.post('/resetPassword', function (req, res) {
+router.post('/reset-password', function (req, res) {
 	Users.findOneAndUpdate({passwordChangetoken: req.body.passwordChangetoken}, {$set: {password: req.body.password}}, {new: true}, function (err, data) {
 		if (data) {
 			res.json({action: 'reset password', successs: true, message: 'Password successfully changed'})
