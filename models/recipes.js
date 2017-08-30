@@ -8,6 +8,7 @@ var recipeSchema = mongoose.Schema({
 	photo: {type: String},
 	ingredients: String,
 	directions: String,
+	categoryId: String,
 	slug: String
 })
 
