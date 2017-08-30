@@ -1,13 +1,31 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
-var Users = require('../models/users');
-var jwt = require('jsonwebtoken');
-var bcrypt = require('bcrypt');
+const Users = require('../models/users');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+const nodemailer = require('nodemailer');
+const smtpTransport = require('nodemailer-smtp-transport');
 
 const checkToken = require('../utils/checkToken');
 
 const saltRounds = 10;
+
+const transporter = nodemailer.createTransport(smtpTransport({
+  service: 'gmail',
+  host: 'smtp.gmail.com',
+  auth: {
+		user: 'nishla@rumsan.com',
+		pass: 'Nishla123'
+  }
+}));
+
+var mailOptions = {
+  from: 'nishla@rumsan.com',
+  to: 'nishlashakya2@gmail.com',
+  subject: 'Sending Email using Node.js',
+  text: 'hello from the other email'
+};
 
 /* GET users listing. */
 router.get('/login', function(req, res) {
@@ -31,6 +49,13 @@ router.post('/check-email', function (req, res) {
 				{new: true},
 				function (err, user) {
 				res.json({successs: true, message: 'Password recovery procedure has been emailed to you'})
+				transporter.sendMail(mailOptions, function(error, info){
+				  if (error) {
+				    console.log(error);
+				  } else {
+				    console.log('Email sent: ' + info.response);
+				  }
+				});
 				//send email with link to reset password
 			});
 		} else {
@@ -93,6 +118,19 @@ router.post('/register', function(req, res) {
 			email: req.body.email,
 			password: hash,
 
+		});
+		let mailOptions = {
+			from: 'nishla@rumsan.com',
+		  to: req.body.email,
+		  subject: 'Welcome to Recipe box',
+		  text: `Hello ${req.body.firstName}, Welcome to Recipe box.`
+		}
+		transporter.sendMail(mailOptions, function(error, info){
+			if (error) {
+				console.log(error);
+			} else {
+				console.log('Email sent: ' + info.response);
+			}
 		});
 		user.save(function(err, doc) {
 			if(err) throw err
