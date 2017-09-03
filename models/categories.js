@@ -4,8 +4,11 @@ var mongoose = require('mongoose')
 
 var categorySchema = mongoose.Schema({
 	name: String,
-	slug: String
-	createdDate: String,
+	slug: String,
+	createdDate: {
+		type: Date,
+		default: Date.now
+	},
 	createdBy: String,
 })
 
