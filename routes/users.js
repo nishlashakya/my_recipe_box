@@ -133,31 +133,31 @@ router.post('/register', function(req, res) {
 			}
 		});
 		user.save(function(err, doc) {
-			if(err) throw err
-			res.json({register: true, doc});
+			if(err) return next(err);
+			res.json(doc);
 		});
 	});
 
 });
 
-router.post('/login', function(req, res) {
+router.post('/login', function(req, res, next) {
 
 	if(req.body.email && req.body.password) {
-		Users.find({email: req.body.email}, function(err, docs) {
+		Users.findOne({email: req.body.email}, function(err, doc) {
 			if(err) {
-				res.json({successs: false, result: {message: 'User not found'}})
+				return next(Error('User not found'));
 			}
-			bcrypt.compare(req.body.password, docs[0].password, function(err, loginSuccess) {
+			bcrypt.compare(req.body.password, doc.password, function(err, loginSuccess) {
 				if(loginSuccess) {
-					var token = jwt.sign(docs[0], 'secret', { expiresIn: 60 * 60 });
-					res.json({successs: true, result: {message: 'Login Successful!', token, user: docs[0]}});
+					var token = jwt.sign(doc, 'secret', { expiresIn: 60 * 60 });
+					res.json(doc);
 				} else {
-					res.json({successs: false, result: {message: 'Password Incorrect'}})
+					return next(Error('Invalid username or password'));
 				}
 			});
 		});
 	} else {
-			res.json({result: {message: 'Please enter your email and password'}})
+			return next(Error('Please enter your email and password'));
 	}
 });
 
