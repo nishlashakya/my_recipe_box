@@ -8,7 +8,7 @@ const coroutine = bluebird.coroutine;
 var Recipes = require('../models/recipes')
 var checkToken = require('../utils/checkToken')
 
-router.post('/addRecipe', checkToken, coroutine(function* (req, res, next) {
+router.post('/addRecipe', coroutine(function* (req, res, next) {
 	var slug = slugify(req.body.title)
 	var recipe = new Recipes ({
 		title: req.body.title,
