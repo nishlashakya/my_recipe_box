@@ -36,9 +36,18 @@ router.delete('/:id', checkToken, coroutine(function* (req, res, next) {
 	}
 }));
 
-router.put('/editRecipe/:id', checkToken, coroutine(function* (req, res, next) {
+router.get('/viewRecipeDetail/:id', coroutine(function* (req, res, next) {
 	try {
-		const updatedRecipe = yield Recipes.findOneAndUpdates({_id: req.params.id}, {$set: req.body}, {new: true});
+		const recipe = yield Recipes.find({_id: req.params.id});
+		res.json({action: 'view', successs: true, recipe});
+	} catch (e) {
+		return next(e);
+	}
+}));
+
+router.put('/editRecipe/:id', coroutine(function* (req, res, next) {
+	try {
+		const updatedRecipe = yield Recipes.findOneAndUpdate({_id: req.params.id}, {$set: req.body}, {new: true});
 		res.json({action: 'update', successs: true, doc: updatedRecipe});
 	} catch (e) {
 		return next(e);
