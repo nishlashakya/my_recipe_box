@@ -45,6 +45,15 @@ router.get('/viewRecipeDetail/:id', coroutine(function* (req, res, next) {
 	}
 }));
 
+router.get('/viewAllRecipes', coroutine(function* (req, res, next) {
+	try {
+		const allRecipe = yield Recipes.find();
+		res.json(allRecipe);
+	} catch (e) {
+		return next(e);
+	}
+}))
+
 router.put('/editRecipe/:id', coroutine(function* (req, res, next) {
 	try {
 		const updatedRecipe = yield Recipes.findOneAndUpdate({_id: req.params.id}, {$set: req.body}, {new: true});
@@ -53,6 +62,16 @@ router.put('/editRecipe/:id', coroutine(function* (req, res, next) {
 		return next(e);
 	}
 }));
+
+router.get('/editRecipe/:id', coroutine(function* (req, res, next) {
+	try {
+		const updateRecipe = yield Recipes.findOne({_id: req.params.id});
+		res.json(updateRecipe);
+	} catch (e) {
+		return next(e);
+	}
+}))
+
 // router.put('/editRecipe/:id', checkToken, function (req, res, next) {
 // 	Recipes.findOneAndUpdate({_id: req.params.id}, {$set: req.body}, {new: true}, function (err, doc) {
 // 		if(err) {

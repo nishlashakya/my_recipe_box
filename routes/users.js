@@ -141,12 +141,14 @@ router.post('/register', function(req, res) {
 });
 
 router.post('/login', function(req, res, next) {
-
 	if(req.body.email && req.body.password) {
 		Users.findOne({email: req.body.email}, function(err, doc) {
 			if(err) {
-				return next(Error('User not found'));
+				return next(err);
 			}
+      if(!doc) {
+        return next(Error('User not found'));
+      }
 			bcrypt.compare(req.body.password, doc.password, function(err, loginSuccess) {
 				if(loginSuccess) {
 					var token = jwt.sign(doc, 'secret', { expiresIn: 60 * 60 });
