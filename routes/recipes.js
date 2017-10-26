@@ -8,7 +8,8 @@ const coroutine = bluebird.coroutine;
 var Recipes = require('../models/recipes')
 var checkToken = require('../utils/checkToken')
 
-router.post('/addRecipe', coroutine(function* (req, res, next) {
+router.post('/add', coroutine(function* (req, res, next) {
+
 	var slug = slugify(req.body.title)
 	var recipe = new Recipes ({
 		title: req.body.title,
@@ -21,13 +22,13 @@ router.post('/addRecipe', coroutine(function* (req, res, next) {
 
 	try {
 		const savedRecipe = yield recipe.save();
-		res.json({ action: 'add', doc: savedRecipe })
+		res.json(savedRecipe)
   } catch (e) {
 		throw Error(e)
 	}
 }));
 
-router.delete('/:id', checkToken, coroutine(function* (req, res, next) {
+router.delete('/:id', coroutine(function* (req, res, next) {
 	try {
 		yield Recipes.find({_id: req.params.id}).remove();
 		res.json({action: 'delete', successs: true});
@@ -36,16 +37,16 @@ router.delete('/:id', checkToken, coroutine(function* (req, res, next) {
 	}
 }));
 
-router.get('/viewRecipeDetail/:id', coroutine(function* (req, res, next) {
+router.get('/view/:id', coroutine(function* (req, res, next) {
 	try {
 		const recipe = yield Recipes.find({_id: req.params.id});
-		res.json({action: 'view', successs: true, recipe});
+		res.json(recipe);
 	} catch (e) {
 		return next(e);
 	}
 }));
 
-router.get('/viewAllRecipes', coroutine(function* (req, res, next) {
+router.get('/view', coroutine(function* (req, res, next) {
 	try {
 		const allRecipe = yield Recipes.find();
 		res.json(allRecipe);
@@ -54,16 +55,16 @@ router.get('/viewAllRecipes', coroutine(function* (req, res, next) {
 	}
 }))
 
-router.put('/editRecipe/:id', coroutine(function* (req, res, next) {
+router.put('/edit/:id', coroutine(function* (req, res, next) {
 	try {
 		const updatedRecipe = yield Recipes.findOneAndUpdate({_id: req.params.id}, {$set: req.body}, {new: true});
-		res.json({action: 'update', successs: true, doc: updatedRecipe});
+		res.json(updatedRecipe);
 	} catch (e) {
 		return next(e);
 	}
 }));
 
-router.get('/editRecipe/:id', coroutine(function* (req, res, next) {
+router.get('/edit/:id', coroutine(function* (req, res, next) {
 	try {
 		const updateRecipe = yield Recipes.findOne({_id: req.params.id});
 		res.json(updateRecipe);

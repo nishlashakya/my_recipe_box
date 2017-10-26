@@ -50,7 +50,7 @@ app.use(function (req, res, next) {
 app.use('/', routes);
 app.use('/users', users);
 app.use('/homepage', homepage);
-app.use('/recipes', recipes);
+app.use('/recipe', recipes);
 app.use('/categories', categories);
 
 /// catch 404 and forwarding to error handler
