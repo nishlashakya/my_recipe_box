@@ -8,8 +8,7 @@ const coroutine = bluebird.coroutine;
 var Recipes = require('../models/recipes')
 var checkToken = require('../utils/checkToken')
 
-router.post('/add', coroutine(function* (req, res, next) {
-
+router.post('/add', checkToken, coroutine(function* (req, res, next) {
 	var slug = slugify(req.body.title)
 	var recipe = new Recipes ({
 		title: req.body.title,
@@ -55,7 +54,7 @@ router.get('/view', coroutine(function* (req, res, next) {
 	}
 }))
 
-router.put('/edit/:id', coroutine(function* (req, res, next) {
+router.put('/edit/:id', checkToken, coroutine(function* (req, res, next) {
 	try {
 		const updatedRecipe = yield Recipes.findOneAndUpdate({_id: req.params.id}, {$set: req.body}, {new: true});
 		res.json(updatedRecipe);
@@ -64,7 +63,7 @@ router.put('/edit/:id', coroutine(function* (req, res, next) {
 	}
 }));
 
-router.get('/edit/:id', coroutine(function* (req, res, next) {
+router.get('/edit/:id', checkToken, coroutine(function* (req, res, next) {
 	try {
 		const updateRecipe = yield Recipes.findOne({_id: req.params.id});
 		res.json(updateRecipe);

@@ -152,7 +152,10 @@ router.post('/login', function(req, res, next) {
 			bcrypt.compare(req.body.password, doc.password, function(err, loginSuccess) {
 				if(loginSuccess) {
 					var token = jwt.sign(doc, 'secret', { expiresIn: 60 * 60 });
-					res.json(doc);
+					res.json({
+            user: doc,
+            token
+          });
 				} else {
 					return next(Error('Invalid username or password'));
 				}
