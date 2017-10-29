@@ -23,14 +23,14 @@ router.post('/add', checkToken, coroutine(function* (req, res, next) {
 		const savedRecipe = yield recipe.save();
 		res.json(savedRecipe)
   } catch (e) {
-		throw Error(e)
+		return next(e);
 	}
 }));
 
 router.delete('/:id', coroutine(function* (req, res, next) {
 	try {
 		yield Recipes.find({_id: req.params.id}).remove();
-		res.json({action: 'delete', successs: true});
+		res.send(true);
 	} catch (e) {
 		return next(e);
 	}
@@ -71,17 +71,5 @@ router.get('/edit/:id', checkToken, coroutine(function* (req, res, next) {
 		return next(e);
 	}
 }))
-
-// router.put('/editRecipe/:id', checkToken, function (req, res, next) {
-// 	Recipes.findOneAndUpdate({_id: req.params.id}, {$set: req.body}, {new: true}, function (err, doc) {
-// 		if(err) {
-// 			res.json({action: 'update', successs: false});
-// 		} else {
-// 			console.log(',,,,,,,,,,,,,,,,', req.body);
-// 			res.json({action: 'update', successs:true, doc})
-// 		}
-// 	})
-// })
-
 
 module.exports = router;
