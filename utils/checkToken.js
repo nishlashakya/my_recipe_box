@@ -1,7 +1,6 @@
-var jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
 
-
-function checkToken(req, res, next) {
+export default function checkToken(req, res, next) {
 	const token = req.headers['authorization']
 	jwt.verify(token, 'secret', function(err, decoded) {
 		if (err) {
@@ -12,5 +11,3 @@ function checkToken(req, res, next) {
 		}
 	});
 }
-
-module.exports = checkToken;

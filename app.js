@@ -51,7 +51,7 @@ app.use('/', routes);
 app.use('/users', users);
 app.use('/homepage', homepage);
 app.use('/recipe', recipes);
-app.use('/categories', categories);
+app.use('/category', categories);
 
 /// catch 404 and forwarding to error handler
 app.use(function(req, res, next) {

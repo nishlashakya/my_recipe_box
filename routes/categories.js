@@ -15,22 +15,20 @@ router.get('/', function(req, res) {
   res.render('index', { title: 'Express' });
 });
 
-router.post('/add-category', checkToken, coroutine(function* (req, res, next) {
+router.post('/add', coroutine(function* (req, res, next) {
+  console.log('mmmmmmmmmmmmmmmmm...........', req.body);
 	const slug = slugify(req.body.name)
 	var category = new Categories ({
 		name: req.body.name,
 		slug,
+    description: req.body.description,
 		createdDate: req.body.date,
-		createdBy: req.decoded._doc.firstName,
+		// createdBy: req.decoded._doc.firstName,
 		// createdBy: req.body.createdBy,
 	});
 	try {
 		var category = yield category.save()
-		res.json({
-			action: 'add category',
-			successs: true,
-			category
-		});
+		res.json(category);
 	} catch (e) {
 		throw Error(e)
 	}
