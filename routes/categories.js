@@ -11,12 +11,16 @@ const coroutine = bluebird.coroutine;
 
 
 /* GET home page. */
-router.get('/', function(req, res) {
-  res.render('index', { title: 'Express' });
-});
+// router.get('/', function(req, res) {
+//   res.render('index', { title: 'Express' });
+// });
 
-router.post('/add', coroutine(function* (req, res, next) {
-  console.log('mmmmmmmmmmmmmmmmm...........', req.body);
+router.get('/', coroutine(function* (req, res, next) {
+  const categories = yield Categories.find({});
+  res.json(categories);
+}))
+
+router.post('/', coroutine(function* (req, res, next) {
 	const slug = slugify(req.body.name)
 	var category = new Categories ({
 		name: req.body.name,
@@ -38,21 +42,23 @@ router.delete('/:id', coroutine(function* (req, res) {
 	try {
 		yield Categories.find({_id: req.params.id}).remove();
 		res.json({
-			action: 'delete category',
-			successs:true
+			id: req.params.id
 		});
 	} catch (e) {
 		throw Error(e)
 	}
 }));
 
-	router.post('/edit-category/:id', function (req, res) {
-		Categories.findOneAndUpdate({_id: req.params.id}, {$set: req.body}, {new: true}, function (err, doc) {
-			res.json({
-				action: 'edit category',
-				successs: true
-			})
-		})
+router.get('/:id', function (req, res) {
+  Categories.findOne({_id: req.params.id}, function (err, category) {
+    res.json(category);
+  })
+})
+
+router.put('/:id', function (req, res) {
+	Categories.findOneAndUpdate({_id: req.params.id}, {$set: req.body}, {new: true}, function (err, doc) {
+		res.json(doc);
 	})
+})
 
 module.exports = router;

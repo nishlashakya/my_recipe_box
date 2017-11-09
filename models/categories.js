@@ -10,6 +10,7 @@ var categorySchema = mongoose.Schema({
 		default: Date.now
 	},
 	createdBy: String,
+	description: String
 })
 
 var Category = module.exports = mongoose.model('Category', categorySchema)
