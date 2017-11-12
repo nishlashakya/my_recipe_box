@@ -20,15 +20,14 @@ router.get('/', coroutine(function* (req, res, next) {
   res.json(categories);
 }))
 
-router.post('/', coroutine(function* (req, res, next) {
+router.post('/', checkToken, coroutine(function* (req, res, next) {
 	const slug = slugify(req.body.name)
 	var category = new Categories ({
 		name: req.body.name,
 		slug,
     description: req.body.description,
 		createdDate: req.body.date,
-		// createdBy: req.decoded._doc.firstName,
-		// createdBy: req.body.createdBy,
+		createdBy: req.decoded._doc._id,
 	});
 	try {
 		var category = yield category.save()
@@ -55,7 +54,7 @@ router.get('/:id', function (req, res) {
   })
 })
 
-router.put('/:id', function (req, res) {
+router.put('/:id', checkToken, function (req, res) {
 	Categories.findOneAndUpdate({_id: req.params.id}, {$set: req.body}, {new: true}, function (err, doc) {
 		res.json(doc);
 	})
