@@ -151,7 +151,7 @@ router.post('/login', function(req, res, next) {
       }
 			bcrypt.compare(req.body.password, doc.password, function(err, loginSuccess) {
 				if(loginSuccess) {
-					var token = jwt.sign(doc, 'secret', { expiresIn: 60 * 60 });
+					var token = jwt.sign(doc, 'secret', { expiresIn: 60 * 60 * 24 * 7 });
 					res.json({
             user: doc,
             token

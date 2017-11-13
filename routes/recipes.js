@@ -16,6 +16,7 @@ router.post('/add', checkToken, coroutine(function* (req, res, next) {
 		photo: req.body.photo,
 		ingredients: req.body.ingredients,
 		directions: req.body.directions,
+		categoryId: req.body.categoryId,
 		slug,
 	});
 
